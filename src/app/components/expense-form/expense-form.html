@@ -1,0 +1,17 @@
+<h3>Add Expense</h3>
+
+<form #expenseForm="ngForm" (submit)="addExpense(expenseForm.form)">
+  <label>Date</label>
+  <input type="date" name="date" required ngModel />
+
+  <label>Description</label>
+  <input type="text" name="description" required ngModel />
+
+  <label>Amount (€)</label>
+  <input type="number" name="amount" required min="1" ngModel />
+
+  <div class="buttons">
+    <button type="submit">Add</button>
+    <button type="button" (click)="close.emit()">Cancel</button>
+  </div>
+</form>

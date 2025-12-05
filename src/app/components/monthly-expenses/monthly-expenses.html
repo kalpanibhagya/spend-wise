@@ -1,0 +1,40 @@
+<section>
+    
+    <h2>Monthly Expenses - {{ today | date: 'MMMM yyyy' }}</h2>
+
+    <div *ngIf="expenses.length === 0">
+        <p>No expenses recorded for this month.</p>
+    </div>
+    <table class="expense-summary" *ngIf="expenses.length > 0">
+        <thead>
+            <tr>
+                <th>Expense</th>
+                <th>Due date</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let expense of expenses">
+                <td>{{ expense.name }}</td>
+                <td>{{ (expense.dueDate || expense.date) | date: 'yyyy-MM-dd' }}</td>
+                <td>€ {{ expense.amount }}</td>
+                <td [class]="expense.status">{{ expense.status }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p *ngIf="expenses.length > 0" class="total-expense">
+        Total: € {{ totalExpenses() }}
+
+    <button class="add-btn" (click)="openAddForm()">Add Expense</button>
+</section>
+
+<div class="modal-wrapper" *ngIf="showForm">
+  <div class="modal-box">
+      <app-expense-form 
+         (expenseAdded)="onExpenseAdded($event)" 
+         (close)="closeForm()">
+      </app-expense-form>
+  </div>
+</div>

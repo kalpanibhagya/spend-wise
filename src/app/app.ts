@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { MonthlyExpenses } from './components/monthly-expenses/monthly-expenses';
+import { Reminders } from './components/reminders/reminders'; 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [ MonthlyExpenses ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

@@ -1,12 +1,14 @@
 {
   "name": "spend-wise",
   "version": "0.0.0",
+  "main": "app.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng build --base-href ./ && electron .",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:ssr:spend-wise": "node dist/spend-wise/server/server.mjs"
   },
   "prettier": {
     "printWidth": 100,
@@ -36,6 +38,7 @@
     "@angular/build": "^21.0.1",
     "@angular/cli": "^21.0.1",
     "@angular/compiler-cli": "^21.0.0",
+    "electron": "^39.2.6",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
