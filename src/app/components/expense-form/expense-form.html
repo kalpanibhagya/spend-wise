@@ -1,14 +1,51 @@
-<h3>Add Expense</h3>
-
 <form #expenseForm="ngForm" (submit)="addExpense(expenseForm.form)">
-  <label>Date</label>
-  <input type="date" name="date" required ngModel />
+  <h3>Add Expense</h3>
+
+  <label>Name *</label>
+  <input type="text" name="name" required ngModel />
+
+  <label>Category *</label>
+  <input type="text" name="category" required ngModel />
+  
+  <label>Amount (€) *</label>
+  <input type="number" name="amount" required min="1" ngModel />
 
   <label>Description</label>
-  <input type="text" name="description" required ngModel />
+  <textarea name="description" ngModel></textarea>
 
-  <label>Amount (€)</label>
-  <input type="number" name="amount" required min="1" ngModel />
+  <label>Due Date</label>
+  <input type="date" name="dueDate" [(ngModel)]="defaultValues.dueDate" />
+
+  <label>Status</label>
+  <select name="status" [(ngModel)]="defaultValues.status">
+    <option value="unpaid" selected>Unpaid</option>
+    <option value="paid">Paid</option>
+    <option value="overdue">Overdue</option>
+  </select>
+
+  <label>
+    <input type="checkbox" name="recurring" [(ngModel)]="isRecurring" />
+    Recurring Expense
+  </label>
+
+
+  <div *ngIf="isRecurring" class="recurring-box">
+    <label>Recurrence Type</label>
+    <select name="recurrenceType" [(ngModel)]="recurrenceType">
+        <option value="monthly">Monthly</option>
+        <option value="daily">Daily</option>
+        <option value="yearly">Yearly</option>
+    </select>
+    <br/>
+    <label>Number of Occurrences</label>
+    <input type="number" name="numOccurrences" min="1" [(ngModel)]="defaultValues.numOccurrences" />
+    <br/>
+    <label>End Date</label>
+    <input type="date" name="endDate" ngModel />
+    <br/>
+    <label>Remind Before (days)</label>
+    <input type="number" name="remindBeforeDays" min="1" [(ngModel)]="defaultValues.remindBeforeDays" value="2" />
+  </div>
 
   <div class="buttons">
     <button type="submit">Add</button>

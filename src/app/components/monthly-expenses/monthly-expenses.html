@@ -1,13 +1,17 @@
 <section>
+    <div class="month-nav">
+        <button (click)="prevMonth()">◀</button>
+        <span> Monthly Expenses - {{ selectedDate | date: 'MMMM yyyy' }} </span>
+        <button (click)="nextMonth()">▶</button>
+    </div>
     
-    <h2>Monthly Expenses - {{ today | date: 'MMMM yyyy' }}</h2>
-
     <div *ngIf="expenses.length === 0">
         <p>No expenses recorded for this month.</p>
     </div>
     <table class="expense-summary" *ngIf="expenses.length > 0">
         <thead>
             <tr>
+                <th></th>
                 <th>Expense</th>
                 <th>Due date</th>
                 <th>Amount</th>
@@ -16,6 +20,11 @@
         </thead>
         <tbody>
             <tr *ngFor="let expense of expenses">
+                <!-- Checkbox + Recurring -->
+                <td class="select-col">
+                    <input type="checkbox" />
+                    <span class="recurring-label">{{ expense.recurring ? 'Recurring' : 'One-time' }}</span>
+                </td>
                 <td>{{ expense.name }}</td>
                 <td>{{ (expense.dueDate || expense.date) | date: 'yyyy-MM-dd' }}</td>
                 <td>€ {{ expense.amount }}</td>

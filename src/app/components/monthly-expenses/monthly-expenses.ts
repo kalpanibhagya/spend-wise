@@ -13,15 +13,17 @@ export class MonthlyExpenses {
 
   showForm = false;
   today: Date = new Date();
-  // Sample expenses data
-  expenses: Expense[] = [
+  selectedDate: Date = new Date();
+  rowSelected: boolean = false;
+  // Sample expenses data - later get from datbase/service
+  expenses_all: Expense[] = [
     {
       id: 1,
       name: 'Groceries',
       description: 'Monthly food purchase',
       amount: 150,
       category: 'Food',
-      date: new Date('2024-06-01'),
+      date: new Date('2025-11-01'),
       recurring: false,
       status: 'paid'
     },
@@ -31,10 +33,9 @@ export class MonthlyExpenses {
       description: 'June bill',
       amount: 75,
       category: 'Utilities',
-      date: new Date('2024-06-03'),
+      date: new Date('2025-11-03'),
       recurring: true,
-      dueDate: new Date('2024-06-03'),
-      recurrenceIntervalMonths: 1,
+      dueDate: new Date('2025-12-03'),
       remindBeforeDays: 3,
       status: 'unpaid'
     },
@@ -44,15 +45,15 @@ export class MonthlyExpenses {
       description: 'Monthly subscription plan',
       amount: 50,
       category: 'Utilities',
-      date: new Date('2024-06-05'),
+      date: new Date('2025-12-05'),
       recurring: true,
-      dueDate: new Date('2024-06-05'),
-      recurrenceIntervalMonths: 1,
+      dueDate: new Date('2025-12-05'),
       remindBeforeDays: 2,
-      numOccurrences: 12,
       status: 'paid'
     }
   ];
+
+  expenses: Expense[] = this.filteredExpenses();
 
   totalExpenses(): number {
     return this.expenses.reduce((total, expense) => total + expense.amount, 0);
@@ -68,10 +69,32 @@ export class MonthlyExpenses {
 
   onExpenseAdded(expense: Expense) {
     expense.id = Date.now(); // assign ID dynamically
+    expense.name = expense.name;
+    expense.category = expense.category;
+    expense.amount = expense.amount;
+    expense.description = expense.description || '';
+    expense.dueDate = expense.dueDate;
     expense.date = new Date(expense.date);
-    expense.status = 'unpaid'; // default status
+    expense.status = expense.status || 'unpaid';
+    expense.recurring = expense.recurring || false;
+    expense.remindBeforeDays = expense.remindBeforeDays || 1;
     this.expenses.push(expense);
+    if (expense.recurring)  {
+      if (expense.numOccurrences || expense.endDate) {
+        for (let i = 1; i < (expense.numOccurrences || 12); i++) {
+          const nextDate = new Date(expense.dueDate!);
+          nextDate.setMonth(nextDate.getMonth() + i);
+          if (expense.endDate && nextDate > expense.endDate) break;
+          this.expenses.push({
+            ...expense,
+            id: Date.now() + i,
+            dueDate: nextDate
+          });
+        }
+      }
+    }
     this.showForm = false;
+    this.expenses = this.filteredExpenses();
   }
 
   updateStatus(expense: Expense) {
@@ -81,6 +104,34 @@ export class MonthlyExpenses {
     if (expense.dueDate < today && expense.status !== 'paid') {
       expense.status = 'overdue';
     }
+  }
+
+  filteredExpenses() {
+    return this.expenses_all.filter(exp => {
+      const d = new Date(exp.dueDate ?? exp.date);
+      return (
+        d.getMonth() === this.selectedDate.getMonth() &&
+        d.getFullYear() === this.selectedDate.getFullYear()
+      );
+    });
+  }
+
+  prevMonth() {
+    this.selectedDate = new Date(
+      this.selectedDate.getFullYear(),
+      this.selectedDate.getMonth() - 1,
+      1
+    );
+    this.expenses = this.filteredExpenses();
+  }
+
+  nextMonth() {
+    this.selectedDate = new Date(
+      this.selectedDate.getFullYear(),
+      this.selectedDate.getMonth() + 1,
+      1
+    );
+    this.expenses = this.filteredExpenses();
   }
 
 }
