@@ -4,7 +4,7 @@
         <span> Monthly Expenses - {{ selectedDate | date: 'MMMM yyyy' }} </span>
         <button (click)="nextMonth()">▶</button>
     </div>
-    
+    <button class="add-btn" (click)="openAddForm()">Add Expense</button>
     <div *ngIf="expenses.length === 0">
         <p>No expenses recorded for this month.</p>
     </div>
@@ -36,7 +36,7 @@
     <p *ngIf="expenses.length > 0" class="total-expense">
         Total: € {{ totalExpenses() }}
 
-    <button class="add-btn" (click)="openAddForm()">Add Expense</button>
+    
 </section>
 
 <div class="modal-wrapper" *ngIf="showForm">

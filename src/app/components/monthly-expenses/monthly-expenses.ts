@@ -14,7 +14,6 @@ export class MonthlyExpenses {
   showForm = false;
   today: Date = new Date();
   selectedDate: Date = new Date();
-  rowSelected: boolean = false;
   // Sample expenses data - later get from datbase/service
   expenses_all: Expense[] = [
     {
