@@ -23,12 +23,30 @@
                 <!-- Checkbox + Recurring -->
                 <td class="select-col">
                     <input type="checkbox" />
-                    <span class="recurring-label">{{ expense.recurring ? 'Recurring' : 'One-time' }}</span>
+                    <i 
+                        *ngIf="expense.recurring" 
+                        class="fa-solid fa-arrows-rotate icon recurring" 
+                        title="Recurring Expense">  </i>
                 </td>
                 <td>{{ expense.name }}</td>
                 <td>{{ (expense.dueDate || expense.date) | date: 'yyyy-MM-dd' }}</td>
                 <td>€ {{ expense.amount }}</td>
-                <td [class]="expense.status">{{ expense.status }}</td>
+                <td class="status-col">
+                    <i 
+                        *ngIf="expense.status === 'paid'" 
+                        class="fa-solid fa-circle-check icon paid">
+                    </i>
+
+                    <i 
+                        *ngIf="expense.status === 'unpaid'" 
+                        class="fa-regular fa-clock icon pending">
+                    </i>
+
+                    <i 
+                        *ngIf="expense.status === 'overdue'" 
+                        class="fa-solid fa-triangle-exclamation icon overdue">
+                    </i>
+                </td>
             </tr>
         </tbody>
     </table>

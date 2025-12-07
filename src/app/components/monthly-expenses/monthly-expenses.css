@@ -161,3 +161,29 @@
     width: 400px;
     max-width: 90%;
 } */
+
+.modal-box {
+    height: 90%;
+    overflow-y: auto;
+}
+
+.status-col {
+    text-align: center;
+}
+
+.icon {
+    font-size: 1.3rem;
+    display: inline-block;
+}
+
+.icon.paid {
+    color: #4caf50;
+}
+
+.icon.pending {
+    color: #ff9800; 
+}
+
+.icon.overdue {
+    color: #f44336;
+}

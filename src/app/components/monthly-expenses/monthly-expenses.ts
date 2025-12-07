@@ -36,7 +36,7 @@ export class MonthlyExpenses {
       recurring: true,
       dueDate: new Date('2025-12-03'),
       remindBeforeDays: 3,
-      status: 'unpaid'
+      status: 'overdue'
     },
     {
       id: 3,
@@ -46,9 +46,9 @@ export class MonthlyExpenses {
       category: 'Utilities',
       date: new Date('2025-12-05'),
       recurring: true,
-      dueDate: new Date('2025-12-05'),
+      dueDate: new Date('2025-12-08'),
       remindBeforeDays: 2,
-      status: 'paid'
+      status: 'unpaid'
     }
   ];
 
