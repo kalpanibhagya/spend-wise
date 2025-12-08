@@ -1,59 +1,43 @@
 # SpendWise
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.1.
+![SpendWise App](spendwise-app.png)
 
-## Development server
+SpendWise is a desktop application for managing and tracking personal expenses. Built with Angular 21 and Electron, it provides an intuitive interface for recording expenses, viewing monthly summaries, and receiving spending reminders.
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+- **Expense Tracking**: Add and manage your daily expenses with an easy-to-use form
+- **Monthly Summary**: View comprehensive charts and statistics of your monthly spending
+- **Reminders**: Set up reminders to help you stay on budget (To be implemented)
+- **Desktop Application**: Built with Electron for a native desktop experience
+- **Responsive Design**: Clean, modern UI with Font Awesome icons
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Tech Stack
 
-## Code scaffolding
+- **Frontend**: Angular 21
+- **Desktop**: Electron 39
+- **Charts**: Chart.js & ECharts via ngx-echarts
+- **Build Tool**: Angular CLI 21
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Getting Started
 
-```bash
-ng generate component component-name
-```
+### Prerequisites
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Node.js (with npm)
+- Angular CLI
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### Installation
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Running the Application
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+To start the desktop application:
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This command builds the Angular application and launches it in Electron.

@@ -13,6 +13,7 @@
             <tr>
                 <th></th>
                 <th>Expense</th>
+                <th>Type</th>
                 <th>Due date</th>
                 <th>Amount</th>
                 <th>Status</th>
@@ -29,6 +30,7 @@
                         title="Recurring Expense">  </i>
                 </td>
                 <td>{{ expense.name }}</td>
+                <td>{{ expense.category }}</td>
                 <td>{{ (expense.dueDate || expense.date) | date: 'yyyy-MM-dd' }}</td>
                 <td>€ {{ expense.amount }}</td>
                 <td class="status-col">
@@ -53,8 +55,12 @@
 
     <p *ngIf="expenses.length > 0" class="total-expense">
         Total: € {{ totalExpenses() }}
+</section>
 
-    
+<section>
+    <div *ngIf="expenses.length > 0" class="chart-wrapper">
+    <div echarts [options]="chartOptions" class="chart-box"></div>
+    </div>
 </section>
 
 <div class="modal-wrapper" *ngIf="showForm">

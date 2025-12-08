@@ -162,10 +162,10 @@
     max-width: 90%;
 } */
 
-.modal-box {
+/* .modal-box {
     height: 90%;
     overflow-y: auto;
-}
+} */
 
 .status-col {
     text-align: center;
@@ -186,4 +186,15 @@
 
 .icon.overdue {
     color: #f44336;
+}
+
+.chart-wrapper {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.chart-box {
+  width: 550px;
+  height: 350px;
 }
