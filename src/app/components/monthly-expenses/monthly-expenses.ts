@@ -4,6 +4,7 @@ import { ExpenseForm } from '../expense-form/expense-form';
 import { Expense } from '../../models/expense';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
+import { ExpenseService } from '../../services/expense.service';
 
 @Component({
   selector: 'app-monthly-expenses',
@@ -12,67 +13,84 @@ import { EChartsOption } from 'echarts';
   styleUrl: './monthly-expenses.css',
 })
 export class MonthlyExpenses implements OnInit{
+  // Sample expenses data - later get from database/service
+  // expenses_all: Expense[] = [
+  //   {
+  //     id: 1,
+  //     name: 'Groceries',
+  //     description: 'Monthly food purchase',
+  //     amount: 150,
+  //     category: 'Food',
+  //     date: new Date('2025-11-01'),
+  //     recurring: false,
+  //     status: 'paid'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Electricity Bill',
+  //     description: 'June bill',
+  //     amount: 75,
+  //     category: 'Utilities',
+  //     date: new Date('2025-11-03'),
+  //     recurring: true,
+  //     dueDate: new Date('2025-12-03'),
+  //     remindBeforeDays: 3,
+  //     status: 'overdue'
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Internet Subscription',
+  //     description: 'Monthly subscription plan',
+  //     amount: 50,
+  //     category: 'Utilities',
+  //     date: new Date('2025-12-05'),
+  //     recurring: true,
+  //     dueDate: new Date('2025-12-08'),
+  //     remindBeforeDays: 2,
+  //     status: 'unpaid'
+  //   },
+  //   {
+  //     id: 4,
+  //     name: 'Groceries',
+  //     description: 'food purchase',
+  //     amount: 64,
+  //     category: 'Food',
+  //     date: new Date('2025-12-01'),
+  //     recurring: false,
+  //     status: 'paid'
+  //   }
+  // ];
 
   showForm = false;
   selectedDate: Date = new Date();
-  
-  // Sample expenses data - later get from database/service
-  expenses_all: Expense[] = [
-    {
-      id: 1,
-      name: 'Groceries',
-      description: 'Monthly food purchase',
-      amount: 150,
-      category: 'Food',
-      date: new Date('2025-11-01'),
-      recurring: false,
-      status: 'paid'
-    },
-    {
-      id: 2,
-      name: 'Electricity Bill',
-      description: 'June bill',
-      amount: 75,
-      category: 'Utilities',
-      date: new Date('2025-11-03'),
-      recurring: true,
-      dueDate: new Date('2025-12-03'),
-      remindBeforeDays: 3,
-      status: 'overdue'
-    },
-    {
-      id: 3,
-      name: 'Internet Subscription',
-      description: 'Monthly subscription plan',
-      amount: 50,
-      category: 'Utilities',
-      date: new Date('2025-12-05'),
-      recurring: true,
-      dueDate: new Date('2025-12-08'),
-      remindBeforeDays: 2,
-      status: 'unpaid'
-    },
-    {
-      id: 4,
-      name: 'Groceries',
-      description: 'food purchase',
-      amount: 64,
-      category: 'Food',
-      date: new Date('2025-12-01'),
-      recurring: false,
-      status: 'paid'
-    }
-  ];
-
-  // Initialize as empty array - will be populated in ngOnInit
   expenses: Expense[] = [];
+  loading = false;
 
-  ngOnInit() {
+  constructor(private expenseService: ExpenseService) {}
+
+  async ngOnInit() {
     console.log('Selected Date:', this.selectedDate);
-    console.log('All Expenses:', this.expenses_all);
-    this.expenses = this.filteredExpenses();
+    await this.loadExpenses();
     console.log('Filtered Expenses:', this.expenses);
-    this.updateChart();
+  }
+
+  async loadExpenses() {
+    this.loading = true;
+    try {
+      const year = this.selectedDate.getFullYear();
+      const month = this.selectedDate.getMonth() + 1; // Service expects 1-12
+      this.expenses = await this.expenseService.getExpensesByMonth(year, month);
+      this.expenses.sort((a, b) => {
+        const dateA = new Date(a.dueDate ?? a.date).getTime();
+        const dateB = new Date(b.dueDate ?? b.date).getTime();
+        return dateA - dateB;
+      });
+      this.updateChart();
+    } catch (error) {
+      console.error('Error loading expenses:', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   totalExpenses(): number {
@@ -87,91 +105,74 @@ export class MonthlyExpenses implements OnInit{
     this.showForm = false;
   }
 
-  onExpenseAdded(expense: Expense) {
-    expense.id = Date.now(); // assign ID dynamically
-    expense.name = expense.name;
-    expense.category = expense.category;
-    expense.amount = expense.amount;
-    expense.description = expense.description || '';
-    expense.dueDate = expense.dueDate;
-    expense.date = new Date(expense.date);
-    expense.status = expense.status || 'unpaid';
-    expense.recurring = expense.recurring || false;
-    expense.remindBeforeDays = expense.remindBeforeDays || 1;
-    
-    // Add to expenses_all instead of expenses
-    this.expenses_all.push(expense);
-    
-    if (expense.recurring)  {
-      if (expense.numOccurrences || expense.endDate) {
+  async onExpenseAdded(expense: Expense) {
+    try {
+      // Ensure dates are valid Date objects
+      expense.date = expense.date ? new Date(expense.date) : new Date();
+      expense.dueDate = expense.dueDate ? new Date(expense.dueDate) : undefined;
+      expense.endDate = expense.endDate ? new Date(expense.endDate) : undefined;
+      expense.status = expense.status || 'unpaid';
+      expense.recurring = expense.recurring || false;
+      expense.remindBeforeDays = expense.remindBeforeDays || 1;
+      
+      // Validate dates
+      if (isNaN(expense.date.getTime())) {
+        console.error('Invalid date:', expense.date);
+        expense.date = new Date();
+      }
+      
+      const id = await this.expenseService.addExpense(expense);
+      console.error('Added expense:', expense);
+      // Handle recurring expenses
+      if (expense.recurring && expense.dueDate && (expense.numOccurrences || expense.endDate)) {
         for (let i = 1; i < (expense.numOccurrences || 12); i++) {
-          const nextDate = new Date(expense.dueDate!);
+          const nextDate = new Date(expense.dueDate);
           nextDate.setMonth(nextDate.getMonth() + i);
           if (expense.endDate && nextDate > expense.endDate) break;
-          this.expenses_all.push({
+          
+          await this.expenseService.addExpense({
             ...expense,
-            id: Date.now() + i,
             dueDate: nextDate
           });
+          console.error('Added expense:', expense);
         }
       }
-    }
-    
-    this.showForm = false;
-    this.expenses = this.filteredExpenses();
-    this.updateChart();
-  }
-
-  updateStatus(expense: Expense) {
-    const today = new Date();
-    if (!expense.dueDate) return;
-
-    if (expense.dueDate < today && expense.status !== 'paid') {
-      expense.status = 'overdue';
-    }
-  }
-
-  filteredExpenses() {
-    console.log('Filtering for month:', this.selectedDate.getMonth(), 'year:', this.selectedDate.getFullYear());
-    
-    var filtered = this.expenses_all.filter(exp => {
-      const d = new Date(exp.dueDate ?? exp.date);
-      console.log('Expense:', exp.name, 'Date:', d, 'Month:', d.getMonth(), 'Year:', d.getFullYear());
       
-      return (
-        d.getMonth() === this.selectedDate.getMonth() &&
-        d.getFullYear() === this.selectedDate.getFullYear()
-      );
-    });
-    return this.sortByDate(filtered);
+      this.closeForm();
+      await this.loadExpenses();
+      alert('Successfully added the expense!');
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      alert('Failed to add expense. Please check the form and try again.');
+    }
   }
 
-  sortByDate(expenses: Expense[]): Expense[] {
-    return expenses.sort((a, b) => {
-      const dateA = new Date(a.dueDate ?? a.date).getTime();
-      const dateB = new Date(b.dueDate ?? b.date).getTime();
-      return dateA - dateB;
-    });
+  async deleteExpense(id: number) {
+    try {
+      await this.expenseService.deleteExpense(id);
+      await this.loadExpenses();
+      this.updateChart();
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+    }
   }
 
-  prevMonth() {
+  async prevMonth() {
     this.selectedDate = new Date(
       this.selectedDate.getFullYear(),
       this.selectedDate.getMonth() - 1,
       1
     );
-    this.expenses = this.filteredExpenses();
-    this.updateChart();
+    await this.loadExpenses();
   }
 
-  nextMonth() {
+  async nextMonth() {
     this.selectedDate = new Date(
       this.selectedDate.getFullYear(),
       this.selectedDate.getMonth() + 1,
       1
     );
-    this.expenses = this.filteredExpenses();
-    this.updateChart();
+    await this.loadExpenses();
   }
 
   chartOptions: EChartsOption = {};

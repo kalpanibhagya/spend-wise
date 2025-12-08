@@ -16,7 +16,8 @@ SpendWise is a desktop application for managing and tracking personal expenses. 
 
 - **Frontend**: Angular 21
 - **Desktop**: Electron 39
-- **Charts**: Chart.js & ECharts via ngx-echarts
+- **Charts**: ECharts via ngx-echarts
+- **Database**: SQLite (using `better-sqlite3`) 
 - **Build Tool**: Angular CLI 21
 
 ## Getting Started
@@ -41,3 +42,9 @@ npm start
 ```
 
 This command builds the Angular application and launches it in Electron.
+
+## To be implemented
+
+- Reminders
+- Updated/Delete expense
+- Yearly summary of the expenses

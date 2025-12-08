@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const url = require("url");
 const path = require("path");
+const { initDatabase, getAllExpenses, addExpense, updateExpense, deleteExpense, getExpensesByMonth } = require('./database');
 
 let mainWindow;
 
@@ -9,9 +10,9 @@ function createWindow() {
         width: 900,
         height: 750,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-            enableRemoteModule: true,
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
         },
         autoHideMenuBar: true,
     });
@@ -29,7 +30,31 @@ function createWindow() {
     });
 }
 
-app.on("ready", createWindow);
+app.whenReady().then(() => {
+  initDatabase();
+  createWindow();
+  
+  // IPC Handlers
+  ipcMain.handle('db:getAllExpenses', async () => {
+    return getAllExpenses();
+  });
+
+  ipcMain.handle('db:addExpense', async (event, expense) => {
+    return addExpense(expense);
+  });
+
+  ipcMain.handle('db:updateExpense', async (event, id, expense) => {
+    return updateExpense(id, expense);
+  });
+
+  ipcMain.handle('db:deleteExpense', async (event, id) => {
+    return deleteExpense(id);
+  });
+
+  ipcMain.handle('db:getExpensesByMonth', async (event, year, month) => {
+    return getExpensesByMonth(year, month);
+  });
+});
 
 app.on("window-all-closed", function () {
     if (process.platform !== "darwin") app.quit();
