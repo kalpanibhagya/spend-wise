@@ -1,0 +1,52 @@
+.chart-wrapper {
+  width: 100%;
+  height: 400px;
+}
+
+.year-filter {
+  margin-bottom: 10px;
+}
+
+.year-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    gap: 15px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border: 2px solid #4CAF50;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.year-nav button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.year-nav button:hover {
+    background-color: #45a049;
+}
+
+.year-nav .year-selector {
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  /* border: 2px solid #4CAF50;
+  border-radius: 4px; */
+  cursor: pointer;
+  min-width: 100px;
+  text-align: center;
+}
+
+.year-nav .year-selector:focus {
+  outline: none;
+  border-color: #45a049;
+}

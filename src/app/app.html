@@ -1,5 +1,29 @@
-<div class="container">
-    <!-- <app-reminders></app-reminders> -->
+<!-- <div class="container">
     <app-monthly-expenses></app-monthly-expenses>
-    
+</div> -->
+
+<div class="tabs-box">
+  <div 
+    class="tab" 
+    [class.selected]="activeTab === 'monthly'"
+    (click)="activeTab = 'monthly'">
+    Monthly Expenses
+  </div>
+
+  <div 
+    class="tab" 
+    [class.selected]="activeTab === 'yearly'"
+    (click)="activeTab = 'yearly'">
+    Yealy Overview
+  </div>
+</div>
+
+
+<div class="container">
+    @if (activeTab === 'monthly') {
+        <app-monthly-expenses></app-monthly-expenses>
+    }
+    @if (activeTab === 'yearly') {
+        <app-yearly-overview></app-yearly-overview>
+    }
 </div>

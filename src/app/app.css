@@ -2,3 +2,20 @@
   padding: 20px;
   margin: auto;
 }
+
+.tabs-box {
+  display: flex;
+  border-bottom: 2px solid #ccc;
+}
+
+.tab {
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.tab.selected {
+  border-color: #0078ff;
+  color: #0078ff;
+  font-weight: bold;
+}

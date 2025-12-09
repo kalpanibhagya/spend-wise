@@ -1,0 +1,40 @@
+<section class="yearly-overview">
+  <div class="year-nav">
+    <button (click)="prevYear()">◀</button>
+    <select [value]="selectedYear" (change)="onYearChange($event)" class="year-selector">
+      <option *ngFor="let year of getAvailableYears()" [value]="year">{{ year }}</option>
+    </select>
+    <button (click)="nextYear()">▶</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <p>Loading expenses...</p>
+  </div>
+
+  <div *ngIf="!loading && expenses_all.length === 0" class="no-data">
+    <p>No expenses recorded yet.</p>
+  </div>
+
+  <div *ngIf="!loading && expenses_all.length > 0 && filteredExpenses().length === 0" class="no-data">
+    <p>No expenses for {{ selectedYear }}.</p>
+  </div>
+
+  <div *ngIf="!loading && filteredExpenses().length > 0" class="chart-container">
+    <!-- <div class="total-summary">
+      <h3>Total Expenses for {{ selectedYear }}: €{{ getTotalForYear() | number:'1.2-2' }}</h3>
+    </div> -->
+    
+    <div echarts [options]="chartOptions" class="chart"></div>
+    
+    <div class="category-breakdown">
+      <h4>Category Breakdown for 2025</h4>
+      <ul>
+        <li *ngFor="let category of categories">
+          <strong>{{ category }}:</strong> 
+          €{{ getCategoryTotal(category) | number:'1.2-2' }}
+        </li>
+      </ul>
+    </div>
+    <h4>Total Expenses for {{ selectedYear }}: €{{ getTotalForYear() | number:'1.2-2' }}</h4>
+  </div>
+</section>

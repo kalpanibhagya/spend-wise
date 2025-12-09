@@ -1,7 +1,7 @@
 <section>
     <div class="month-nav">
         <button (click)="prevMonth()">◀</button>
-        <span> Monthly Expenses - {{ selectedDate | date: 'MMMM yyyy' }} </span>
+        <span> {{ selectedDate | date: 'MMMM yyyy' }} </span>
         <button (click)="nextMonth()">▶</button>
     </div>
     <button class="add-btn" (click)="openAddForm()">Add Expense</button>
@@ -13,7 +13,7 @@
             <tr>
                 <th></th>
                 <th>Expense</th>
-                <th>Type</th>
+                <th>Category</th>
                 <th>Due date</th>
                 <th>Amount</th>
                 <th>Status</th>
