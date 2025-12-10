@@ -2,19 +2,54 @@
   <h3>Add Expense</h3>
 
   <label>Name *</label>
-  <input type="text" name="name" required ngModel />
+  <input 
+    type="text" 
+    name="name" 
+    required 
+    ngModel 
+    #nameField="ngModel" />
+  <span class="error" *ngIf="nameField.invalid && nameField.touched">
+    Name is required
+  </span>
 
   <label>Category *</label>
-  <input type="text" name="category" required ngModel />
+  <input 
+    type="text" 
+    name="category" 
+    required 
+    ngModel 
+    #categoryField="ngModel" />
+  <span class="error" *ngIf="categoryField.invalid && categoryField.touched">
+    Category is required
+  </span>
   
   <label>Amount (€) *</label>
-  <input type="number" name="amount" required min="0.01" step="0.01" ngModel />
+  <input 
+    type="number" 
+    name="amount" 
+    required 
+    min="0.01" 
+    step="0.01" 
+    ngModel 
+    #amountField="ngModel" />
+  <span class="error" *ngIf="amountField.invalid && amountField.touched">
+    <span *ngIf="amountField.errors?.['required']">Amount is required</span>
+    <span *ngIf="amountField.errors?.['min']">Amount must be greater than 0</span>
+  </span>
 
   <label>Description</label>
   <textarea name="description" ngModel></textarea>
 
   <label>Due Date *</label>
-  <input type="date" name="dueDate" [ngModel]="defaultValues.dueDate" required />
+  <input 
+    type="date" 
+    name="dueDate" 
+    [ngModel]="defaultValues.dueDate" 
+    required 
+    #dueDateField="ngModel" />
+  <span class="error" *ngIf="dueDateField.invalid && dueDateField.touched">
+    Due date is required
+  </span>
 
   <label>Status</label>
   <select name="status" [ngModel]="defaultValues.status">
@@ -23,9 +58,9 @@
     <option value="overdue">Overdue</option>
   </select>
 
-  <label>
+  <label class="checkbox-label">
     <input type="checkbox" name="recurring" [(ngModel)]="isRecurring" />
-    Recurring Expense
+    <span>Recurring Expense</span>
   </label>
 
   <div *ngIf="isRecurring" class="recurring-box">
@@ -47,7 +82,9 @@
   </div>
 
   <div class="buttons">
-    <button type="submit" [disabled]="!expenseForm.valid">Add</button>
+    <button type="submit" [disabled]="!expenseForm.valid">
+      {{ expenseForm.valid ? 'Add' : 'Fill Required Fields' }}
+    </button>
     <button type="button" (click)="onCancel()">Cancel</button>
   </div>
 </form>

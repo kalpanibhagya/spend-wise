@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExpenseForm } from '../expense-form/expense-form'; 
 import { Expense } from '../../models/expense';
@@ -18,7 +18,10 @@ export class MonthlyExpenses implements OnInit{
   expenses: Expense[] = [];
   loading = false;
 
-  constructor(private expenseService: ExpenseService) {}
+  constructor(
+    private expenseService: ExpenseService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   async ngOnInit() {
     console.log('Selected Date:', this.selectedDate);
@@ -91,6 +94,8 @@ export class MonthlyExpenses implements OnInit{
       }
       
       this.closeForm();
+      this.cdr.detectChanges();
+      
       await this.loadExpenses();
       alert('Successfully added the expense!');
     } catch (error) {
