@@ -13,54 +13,6 @@ import { ExpenseService } from '../../services/expense.service';
   styleUrl: './monthly-expenses.css',
 })
 export class MonthlyExpenses implements OnInit{
-  // Sample expenses data - later get from database/service
-  // expenses_all: Expense[] = [
-  //   {
-  //     id: 1,
-  //     name: 'Groceries',
-  //     description: 'Monthly food purchase',
-  //     amount: 150,
-  //     category: 'Food',
-  //     date: new Date('2025-11-01'),
-  //     recurring: false,
-  //     status: 'paid'
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Electricity Bill',
-  //     description: 'June bill',
-  //     amount: 75,
-  //     category: 'Utilities',
-  //     date: new Date('2025-11-03'),
-  //     recurring: true,
-  //     dueDate: new Date('2025-12-03'),
-  //     remindBeforeDays: 3,
-  //     status: 'overdue'
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Internet Subscription',
-  //     description: 'Monthly subscription plan',
-  //     amount: 50,
-  //     category: 'Utilities',
-  //     date: new Date('2025-12-05'),
-  //     recurring: true,
-  //     dueDate: new Date('2025-12-08'),
-  //     remindBeforeDays: 2,
-  //     status: 'unpaid'
-  //   },
-  //   {
-  //     id: 4,
-  //     name: 'Groceries',
-  //     description: 'food purchase',
-  //     amount: 64,
-  //     category: 'Food',
-  //     date: new Date('2025-12-01'),
-  //     recurring: false,
-  //     status: 'paid'
-  //   }
-  // ];
-
   showForm = false;
   selectedDate: Date = new Date();
   expenses: Expense[] = [];

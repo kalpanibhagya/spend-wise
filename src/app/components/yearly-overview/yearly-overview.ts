@@ -98,7 +98,7 @@ export class YearlyOverview implements OnInit {
 
     this.chartOptions = {
       title: { 
-        text: `Yearly Expenses Overview by Month and Categories`, 
+        text: `Annual Expenditure Summary`, 
         left: 'center',
         top: 10
       },
