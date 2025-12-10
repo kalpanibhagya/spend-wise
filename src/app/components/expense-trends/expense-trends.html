@@ -1,0 +1,110 @@
+<div class="expense-trends">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    Loading expense trends...
+  </div>
+
+  <!-- No Data -->
+  <div *ngIf="!loading && expenses_all.length === 0" class="no-data">
+    No expense data found.
+  </div>
+
+  <div *ngIf="!loading && expenses_all.length > 0" class="trends-container">
+
+    <!-- Statistics Cards -->
+    <div class="statistics">
+      <div class="stat-card">
+        <h4>Average Yearly Expense</h4>
+        <p class="stat-value">€{{ getAverageYearlyExpense() | number:'1.2-2' }}</p>
+      </div>
+
+      <div class="stat-card">
+        <h4>Highest Spending Year</h4>
+        <p class="stat-value">€{{ getHighestYearExpense().amount | number:'1.2-2' }}</p>
+        <p class="stat-detail">{{ getHighestYearExpense().year }}</p>
+      </div>
+
+      <div class="stat-card">
+        <h4>Lowest Spending Year</h4>
+        <p class="stat-value">€{{ getLowestYearExpense().amount | number:'1.2-2' }}</p>
+        <p class="stat-detail">{{ getLowestYearExpense().year }}</p>
+      </div>
+    </div>
+
+    <!-- Chart Controls -->
+    <div class="chart-controls">
+
+      <!-- Category Filters -->
+      <div class="control-section">
+        <h4>Filter by Category</h4>
+
+        <div class="category-filters">
+          <button class="filter-btn all" (click)="selectAllCategories()">Select All</button>
+          <button class="filter-btn none" (click)="deselectAllCategories()">Clear All</button>
+
+          <ng-container *ngFor="let category of categories">
+            <label class="category-checkbox">
+              <input
+                type="checkbox"
+                [checked]="selectedCategories.has(category)"
+                (change)="toggleCategory(category)"
+              />
+              <span>{{ category }}</span>
+            </label>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Total Toggle -->
+      <div class="control-section">
+        <label class="total-toggle">
+          <input
+            type="checkbox"
+            [checked]="showTotal"
+            (change)="toggleTotal()"
+          />
+          Show Total Trend Line
+        </label>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="chart-wrapper">
+      <div
+        echarts
+        class="chart"
+        [options]="chartOptions"
+      ></div>
+    </div>
+
+    <!-- Yearly Breakdown Table -->
+    <div class="yearly-breakdown">
+      <h3>Expense Breakdown By Category</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="year-cell">Year</th>
+            <th *ngFor="let category of selectedCategories">{{ category }}</th>
+            <th class="total-column">Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let year of years">
+            <td class="year-cell">{{ year }}</td>
+
+            <td *ngFor="let category of selectedCategories">
+              €{{ getYearlyTotalByCategory(year, category) | number:'1.2-2' }}
+            </td>
+
+            <td class="total-column">
+              €{{ getYearlyTotal(year) | number:'1.2-2' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

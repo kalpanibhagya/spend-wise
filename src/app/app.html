@@ -16,6 +16,13 @@
     (click)="activeTab = 'yearly'">
     Yealy Overview
   </div>
+
+  <div 
+    class="tab" 
+    [class.selected]="activeTab === 'trends'"
+    (click)="activeTab = 'trends'">
+    Trends
+  </div>
 </div>
 
 
@@ -25,5 +32,8 @@
     }
     @if (activeTab === 'yearly') {
         <app-yearly-overview></app-yearly-overview>
+    }
+    @if (activeTab === 'trends') {
+        <app-expense-trends></app-expense-trends>
     }
 </div>
