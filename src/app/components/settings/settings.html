@@ -1,0 +1,30 @@
+<section class="data-cleanup">
+    <h3>Data Cleanup</h3>
+    <p>Remove old expenses by month or by year. Use with caution — this action cannot be undone.</p>
+
+    <div class="row">
+        <label for="year">Year</label>
+        <input id="year" type="number" [(ngModel)]="year" min="1970" max="2100" />
+    </div>
+
+    <div class="row">
+        <label for="month">Month (optional)</label>
+        <select id="month" [(ngModel)]="month">
+            <option [ngValue]="undefined">-- Select month (optional) --</option>
+            <option *ngFor="let m of months; index as i" [value]="i+1">{{m}}</option>
+        </select>
+    </div>
+
+    <div class="actions">
+        <button class="btn-danger" (click)="deleteSelectedMonth()" [disabled]="!year || !month">Delete selected month</button>
+        <button class="btn-danger" (click)="deleteSelectedYear()" [disabled]="!year">Delete selected year</button>
+    </div>
+
+    <h3>Export</h3>
+    <p>Export data to CSV for the selected month, selected year, or all data.</p>
+    <div class="actions">
+        <button class="btn" (click)="exportSelectedMonth()" [disabled]="!year || !month">Export selected month</button>
+        <button class="btn" (click)="exportSelectedYear()" [disabled]="!year">Export selected year</button>
+        <button class="btn" (click)="exportAll()">Export all data</button>
+    </div>
+</section>

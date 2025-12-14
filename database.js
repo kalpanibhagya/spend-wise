@@ -118,11 +118,43 @@ function getExpensesByMonth(year, month) {
   }
 }
 
+function deleteExpensesByMonth(year, month) {
+  try {
+    const monthStr = month.toString().padStart(2, '0');
+    const stmt = db.prepare(`
+      DELETE FROM expenses
+      WHERE strftime('%Y', COALESCE(dueDate, date)) = ?
+      AND strftime('%m', COALESCE(dueDate, date)) = ?
+    `);
+    const result = stmt.run(year.toString(), monthStr);
+    return result.changes;
+  } catch (error) {
+    console.error('Error deleting expenses by month:', error);
+    throw error;
+  }
+}
+
+function deleteExpensesByYear(year) {
+  try {
+    const stmt = db.prepare(`
+      DELETE FROM expenses
+      WHERE strftime('%Y', COALESCE(dueDate, date)) = ?
+    `);
+    const result = stmt.run(year.toString());
+    return result.changes;
+  } catch (error) {
+    console.error('Error deleting expenses by year:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   initDatabase,
   getAllExpenses,
   addExpense,
   updateExpense,
   deleteExpense,
+  deleteExpensesByMonth,
+  deleteExpensesByYear,
   getExpensesByMonth
 };

@@ -12,6 +12,8 @@ SpendWise is a desktop application for managing and tracking personal expenses. 
 - **Reminders**: Set up reminders to help you stay on budget (To be implemented)
 - **Desktop application**: Built with Electron for a native desktop experience
 - **Responsive design**: Clean, modern UI with Font Awesome icons
+- **Data Cleanup**: Delete all expenses for a selected month or an entire year from the Settings panel
+- **Export**: Export expenses as CSV (selected month, selected year, or all data) from the Settings panel
 
 ## Tech Stack
 

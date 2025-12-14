@@ -1,7 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const url = require("url");
 const path = require("path");
-const { initDatabase, getAllExpenses, addExpense, updateExpense, deleteExpense, getExpensesByMonth } = require('./database');
+const { initDatabase, getAllExpenses, addExpense, updateExpense, deleteExpense, getExpensesByMonth, deleteExpensesByMonth, deleteExpensesByYear } = require('./database');
+const fs = require('fs');
 
 let mainWindow;
 
@@ -53,6 +54,66 @@ app.whenReady().then(() => {
 
   ipcMain.handle('db:getExpensesByMonth', async (event, year, month) => {
     return getExpensesByMonth(year, month);
+  });
+  
+  ipcMain.handle('db:deleteExpensesByMonth', async (event, year, month) => {
+    return deleteExpensesByMonth(year, month);
+  });
+
+  ipcMain.handle('db:deleteExpensesByYear', async (event, year) => {
+    return deleteExpensesByYear(year);
+  });
+
+  ipcMain.handle('db:exportExpenses', async (event, options) => {
+    // options: { scope: 'all'|'month'|'year', year?: number, month?: number }
+    try {
+      let data = [];
+      if (options.scope === 'all') {
+        data = getAllExpenses();
+      } else if (options.scope === 'year') {
+        // Reuse month query across 12 months
+        const year = options.year;
+        for (let m = 1; m <= 12; m++) {
+          const rows = getExpensesByMonth(year, m);
+          data = data.concat(rows);
+        }
+      } else if (options.scope === 'month') {
+        data = getExpensesByMonth(options.year, options.month);
+      } else {
+        throw new Error('Invalid export scope');
+      }
+
+      // CSV header
+      const header = ['id','name','description','amount','category','date','dueDate','recurring','status','remindBeforeDays','numOccurrences','endDate'];
+
+      const csvRows = [header.join(',')];
+
+      for (const r of data) {
+        const row = header.map(h => {
+          let val = r[h] === null || r[h] === undefined ? '' : String(r[h]);
+          // Escape quotes
+          val = '"' + val.replace(/"/g, '""') + '"';
+          return val;
+        }).join(',');
+        csvRows.push(row);
+      }
+
+      const defaultName = options.scope === 'all' ? `spendwise-export-all-${new Date().toISOString().slice(0,10)}.csv` : (options.scope === 'year' ? `spendwise-export-${options.year}.csv` : `spendwise-export-${options.year}-${String(options.month).padStart(2,'0')}.csv`);
+
+      const { canceled, filePath } = await dialog.showSaveDialog({
+        title: 'Export expenses',
+        defaultPath: defaultName,
+        filters: [ { name: 'CSV', extensions: ['csv'] } ]
+      });
+
+      if (canceled || !filePath) return null;
+
+      fs.writeFileSync(filePath, csvRows.join('\n'), 'utf8');
+      return filePath;
+    } catch (error) {
+      console.error('Error exporting expenses:', error);
+      throw error;
+    }
   });
 });
 

@@ -242,7 +242,12 @@
   background: #555;
 }
 
-/* Responsive */
+.month-nav button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 @media (max-width: 768px) {
   .modal-wrapper {
     padding: 0.5rem;

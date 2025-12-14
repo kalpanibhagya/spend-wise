@@ -9,6 +9,9 @@ declare global {
       updateExpense: (id: number, expense: any) => Promise<any>;
       deleteExpense: (id: number) => Promise<any>;
       getExpensesByMonth: (year: number, month: number) => Promise<any[]>;
+      deleteExpensesByMonth: (year: number, month: number) => Promise<number>;
+      deleteExpensesByYear: (year: number) => Promise<number>;
+      exportExpenses: (options: { scope: 'all'|'month'|'year', year?: number, month?: number }) => Promise<string | null>;
     };
   }
 }
@@ -35,6 +38,18 @@ export class ExpenseService {
 
   async deleteExpense(id: number): Promise<void> {
     await window.electronAPI.deleteExpense(id);
+  }
+
+  async deleteExpensesByMonth(year: number, month: number): Promise<number> {
+    return await window.electronAPI.deleteExpensesByMonth(year, month);
+  }
+
+  async deleteExpensesByYear(year: number): Promise<number> {
+    return await window.electronAPI.deleteExpensesByYear(year);
+  }
+
+  async exportExpenses(options: { scope: 'all'|'month'|'year', year?: number, month?: number }): Promise<string | null> {
+    return await window.electronAPI.exportExpenses(options);
   }
 
   async getExpensesByMonth(year: number, month: number): Promise<Expense[]> {

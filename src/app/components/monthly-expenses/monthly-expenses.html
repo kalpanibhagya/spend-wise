@@ -2,7 +2,7 @@
     <div class="month-nav">
         <button (click)="prevMonth()">◀</button>
         <span> {{ selectedDate | date: 'MMMM yyyy' }} </span>
-        <button (click)="nextMonth()">▶</button>
+        <button (click)="nextMonth()" [disabled]="isNextMonthDisabled()">▶</button>
     </div>
     <button class="add-btn" (click)="openAddForm()">Add Expense</button>
     <div *ngIf="expenses.length === 0">

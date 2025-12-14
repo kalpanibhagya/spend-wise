@@ -1,0 +1,53 @@
+/* Settings styles */
+.settings-container {
+	padding: 16px;
+}
+
+.data-cleanup {
+	border: 1px solid #eee;
+	padding: 12px;
+	border-radius: 6px;
+	max-width: 600px;
+}
+
+.data-cleanup .row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.data-cleanup .actions {
+	margin-top: 12px;
+	display: flex;
+	gap: 8px;
+}
+
+.btn-danger {
+	background: #e74c3c;
+	color: #fff;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.btn-danger[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.btn {
+	background: #3498db;
+	color: #fff;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.btn[disabled] {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+

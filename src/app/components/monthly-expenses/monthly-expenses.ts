@@ -17,7 +17,7 @@ export class MonthlyExpenses implements OnInit{
   selectedDate: Date = new Date();
   expenses: Expense[] = [];
   loading = false;
-
+  today: Date = new Date();
   constructor(
     private expenseService: ExpenseService,
     private cdr: ChangeDetectorRef
@@ -124,12 +124,28 @@ export class MonthlyExpenses implements OnInit{
   }
 
   async nextMonth() {
-    this.selectedDate = new Date(
+    const nextMonthDate = new Date(
       this.selectedDate.getFullYear(),
       this.selectedDate.getMonth() + 1,
       1
     );
-    await this.loadExpenses();
+    const currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+    // Only allow navigation if next month is not in the future
+    if (nextMonthDate <= currentMonth) {
+      this.selectedDate = nextMonthDate;
+      await this.loadExpenses();
+    }
+  }
+
+  // Helper method to check if next button should be disabled
+  isNextMonthDisabled(): boolean {
+    const nextMonth = new Date(
+      this.selectedDate.getFullYear(),
+      this.selectedDate.getMonth() + 1,
+      1
+    );
+    const currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+    return nextMonth > currentMonth;
   }
 
   chartOptions: EChartsOption = {};
