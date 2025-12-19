@@ -132,8 +132,18 @@ export class YearlyOverview implements OnInit {
   }
 
   nextYear() {
-    this.selectedYear++;
-    this.filteredExpenses();
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    if (this.selectedYear <= currentYear) {
+      this.selectedYear++;
+      this.filteredExpenses();
+    }
+  }
+
+  isNextYearDisabled(): boolean {
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    return this.selectedYear > currentYear - 1;
   }
 
   // Calculate total expense for the year

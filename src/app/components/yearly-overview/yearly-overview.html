@@ -4,7 +4,7 @@
     <select [value]="selectedYear" (change)="onYearChange($event)" class="year-selector">
       <option *ngFor="let year of getAvailableYears()" [value]="year">{{ year }}</option>
     </select>
-    <button (click)="nextYear()">▶</button>
+    <button (click)="nextYear()" [disabled]="isNextYearDisabled()">▶</button>
   </div>
 
   <div *ngIf="loading" class="loading">
