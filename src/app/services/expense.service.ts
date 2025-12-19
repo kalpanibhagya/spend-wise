@@ -9,6 +9,7 @@ declare global {
       updateExpense: (id: number, expense: any) => Promise<any>;
       deleteExpense: (id: number) => Promise<any>;
       getExpensesByMonth: (year: number, month: number) => Promise<any[]>;
+      getExpensesByYear: (year: number) => Promise<any[]>;
       deleteExpensesByMonth: (year: number, month: number) => Promise<number>;
       deleteExpensesByYear: (year: number) => Promise<number>;
       exportExpenses: (options: { scope: 'all'|'month'|'year', year?: number, month?: number }) => Promise<string | null>;
@@ -54,6 +55,11 @@ export class ExpenseService {
 
   async getExpensesByMonth(year: number, month: number): Promise<Expense[]> {
     const expenses = await window.electronAPI.getExpensesByMonth(year, month);
+    return this.mapDbToExpense(expenses);
+  }
+
+  async getExpensesByYear(year: number): Promise<Expense[]> {
+    const expenses = await window.electronAPI.getExpensesByYear(year);
     return this.mapDbToExpense(expenses);
   }
 

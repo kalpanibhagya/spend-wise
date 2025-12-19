@@ -1,5 +1,6 @@
 const Database = require('better-sqlite3');
 const { app } = require('electron');
+const { get } = require('http');
 const path = require('path');
 
 const dbPath = path.join(app.getPath('userData'), 'expenses.db');
@@ -118,6 +119,18 @@ function getExpensesByMonth(year, month) {
   }
 }
 
+function getExpensesByYear(year) {
+  try {
+    return db.prepare(`
+      SELECT * FROM expenses 
+      WHERE strftime('%Y', COALESCE(dueDate, date)) = ?
+    `).all(year.toString());
+  } catch (error) {
+    console.error('Error getting expenses by year:', error);
+    return [];
+  }
+}
+
 function deleteExpensesByMonth(year, month) {
   try {
     const monthStr = month.toString().padStart(2, '0');
@@ -156,5 +169,6 @@ module.exports = {
   deleteExpense,
   deleteExpensesByMonth,
   deleteExpensesByYear,
-  getExpensesByMonth
+  getExpensesByMonth,
+  getExpensesByYear
 };

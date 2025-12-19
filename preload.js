@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateExpense: (id, expense) => ipcRenderer.invoke('db:updateExpense', id, expense),
   deleteExpense: (id) => ipcRenderer.invoke('db:deleteExpense', id),
   getExpensesByMonth: (year, month) => ipcRenderer.invoke('db:getExpensesByMonth', year, month),
+  getExpensesByYear: (year) => ipcRenderer.invoke('db:getExpensesByYear', year),
   deleteExpensesByMonth: (year, month) => ipcRenderer.invoke('db:deleteExpensesByMonth', year, month),
   deleteExpensesByYear: (year) => ipcRenderer.invoke('db:deleteExpensesByYear', year)
   ,

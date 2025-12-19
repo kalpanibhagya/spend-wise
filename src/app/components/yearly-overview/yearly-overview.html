@@ -11,15 +11,11 @@
     <p>Loading expenses...</p>
   </div>
 
-  <div *ngIf="!loading && expenses_all.length === 0" class="no-data">
-    <p>No expenses recorded yet.</p>
-  </div>
-
-  <div *ngIf="!loading && expenses_all.length > 0 && filteredExpenses().length === 0" class="no-data">
+  <div *ngIf="!loading && expenses.length === 0" class="no-data">
     <p>No expenses for {{ selectedYear }}.</p>
   </div>
 
-  <div *ngIf="!loading && filteredExpenses().length > 0" class="chart-container">
+  <div *ngIf="!loading && expenses.length > 0" class="chart-container">
     <div class="statistics">
       <div class="stat-card" *ngFor="let category of categories">
         <h4>{{ category }}</h4>
@@ -27,7 +23,7 @@
       </div>
       <div class="total-card">
         <h4>Total</h4>
-        <p class="total-value">€{{ getTotalForYear() | number:'1.2-2' }}</p>
+        <p class="total-value">€{{ getTotalExpenseForYear() | number:'1.2-2' }}</p>
       </div>
     </div>
     <div echarts [options]="chartOptions" class="chart"></div>

@@ -14,7 +14,7 @@ import { ExpenseService } from '../../services/expense.service';
 export class YearlyOverview implements OnInit {
   selectedYear: number = new Date().getFullYear();
   chartOptions: EChartsOption = {};
-  expenses_all: Expense[] = [];
+  expenses: Expense[] = [];
   categories: string[] = [];
   availableYears: number[] = [];
   loading = false;
@@ -22,59 +22,40 @@ export class YearlyOverview implements OnInit {
   constructor(private expenseService: ExpenseService) {}
 
   async ngOnInit() {
-    await this.loadExpenses();
+    console.log('Initializing Yearly Overview for year:', this.selectedYear);
+    await this.filteredExpenses();
   }
 
-  async loadExpenses() {
-    this.loading = true;
+  async filteredExpenses() {
     try {
-      this.expenses_all = await this.expenseService.getAllExpenses();
-      console.log('All Expenses:', this.expenses_all);
-      
-      // Calculate available years from data
-      this.availableYears = this.calculateAvailableYears();
-      console.log('Available years:', this.availableYears);
-      
-      // If current year has no data, default to the most recent year with data
-      if (this.availableYears.length > 0 && !this.availableYears.includes(this.selectedYear)) {
-        this.selectedYear = this.availableYears[0]; // Most recent year
-        console.log('Current year has no data, switching to:', this.selectedYear);
-      }
-      
-      this.updateChart();
+      const allExpenses = await this.expenseService.getExpensesByYear(this.selectedYear);
+      this.expenses = allExpenses.filter(exp => {
+        const expDate = exp.dueDate || exp.date;
+        const date = expDate instanceof Date ? expDate : new Date(expDate);
+        return date.getFullYear() === this.selectedYear;
+      });
+      this.updateChart(this.expenses);
+      return this.expenses;
     } catch (error) {
-      console.error('Error loading expenses:', error);
+      console.error('Error filtering expenses by year:', error);
     } finally {
       this.loading = false;
     }
+    return [];
   }
 
-  filteredExpenses() {
-    return this.expenses_all.filter(exp => {
-      // Ensure date is a Date object
-      const expDate = exp.dueDate || exp.date;
-      const date = expDate instanceof Date ? expDate : new Date(expDate);
-      return date.getFullYear() === this.selectedYear;
-    });
-  }
-
-  updateChart() {
-    const expenses = this.filteredExpenses();
+  updateChart(expenses: Expense[] = []) {
     console.log('Filtered Expenses for', this.selectedYear, expenses);
-    
     if (expenses.length === 0) {
       this.chartOptions = {};
       this.categories = [];
       return;
     }
-
     // Get unique categories
     this.categories = [...new Set(expenses.map(e => e.category))];
-
     // Prepare data per category
     const seriesData: BarSeriesOption[] = this.categories.map(cat => {
-      const data = Array(12).fill(0);
-      
+      const data = Array(12).fill(0); // One entry per month
       expenses
         .filter(e => e.category === cat)
         .forEach(e => {
@@ -142,46 +123,34 @@ export class YearlyOverview implements OnInit {
 
   onYearChange(event: any) {
     this.selectedYear = +event.target.value;
-    this.updateChart();
+    this.filteredExpenses();
   }
 
   prevYear() {
     this.selectedYear--;
-    this.updateChart();
+    this.filteredExpenses();
   }
 
   nextYear() {
     this.selectedYear++;
-    this.updateChart();
+    this.filteredExpenses();
   }
 
-  // Calculate total for the year
-  getTotalForYear(): number {
-    return this.filteredExpenses().reduce((sum, exp) => sum + exp.amount, 0);
+  // Calculate total expense for the year
+  getTotalExpenseForYear() {
+    return this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
   }
 
   // Get total for a specific category
-  getCategoryTotal(category: string): number {
-    return this.filteredExpenses()
-      .filter(e => e.category === category)
+  getCategoryTotal(category: string) {
+    return this.expenses
+    .filter(e => e.category === category)
       .reduce((sum, e) => sum + e.amount, 0);
   }
 
-  // Get available years from data
-  calculateAvailableYears(): number[] {
-    const years = new Set<number>();
-    this.expenses_all.forEach(exp => {
-      const expDate = exp.dueDate || exp.date;
-      const date = expDate instanceof Date ? expDate : new Date(expDate);
-      if (!isNaN(date.getTime())) {
-        years.add(date.getFullYear());
-      }
-    });
-    return Array.from(years).sort((a, b) => b - a); // Most recent first
-  }
-
-  // Use cached available years
   getAvailableYears(): number[] {
+    this.availableYears = Array.from({ length: 20 }, (_, i) => this.selectedYear - i);
+    console.log('Available years:', this.availableYears);
     return this.availableYears;
   }
 }

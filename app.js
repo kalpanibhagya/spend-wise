@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const url = require("url");
 const path = require("path");
-const { initDatabase, getAllExpenses, addExpense, updateExpense, deleteExpense, getExpensesByMonth, deleteExpensesByMonth, deleteExpensesByYear } = require('./database');
+const { initDatabase, getAllExpenses, addExpense, updateExpense, deleteExpense, getExpensesByMonth, getExpensesByYear, deleteExpensesByMonth, deleteExpensesByYear } = require('./database');
 const fs = require('fs');
 
 let mainWindow;
@@ -54,6 +54,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('db:getExpensesByMonth', async (event, year, month) => {
     return getExpensesByMonth(year, month);
+  });
+
+  ipcMain.handle('db:getExpensesByYear', async (event, year) => {
+    return getExpensesByYear(year);
   });
   
   ipcMain.handle('db:deleteExpensesByMonth', async (event, year, month) => {
