@@ -18,6 +18,7 @@ export class MonthlyExpenses implements OnInit{
   expenses: Expense[] = [];
   loading = false;
   today: Date = new Date();
+  
   constructor(
     private expenseService: ExpenseService,
     private cdr: ChangeDetectorRef
@@ -31,20 +32,28 @@ export class MonthlyExpenses implements OnInit{
 
   async loadExpenses() {
     this.loading = true;
+    this.cdr.detectChanges();
     try {
       const year = this.selectedDate.getFullYear();
-      const month = this.selectedDate.getMonth() + 1; // Service expects 1-12
+      const month = this.selectedDate.getMonth() + 1;
+      
       this.expenses = await this.expenseService.getExpensesByMonth(year, month);
+      
       this.expenses.sort((a, b) => {
         const dateA = new Date(a.dueDate ?? a.date).getTime();
         const dateB = new Date(b.dueDate ?? b.date).getTime();
         return dateA - dateB;
       });
+      
       this.updateChart();
+      
     } catch (error) {
       console.error('Error loading expenses:', error);
+      this.expenses = [];
+      this.updateChart();
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -62,7 +71,6 @@ export class MonthlyExpenses implements OnInit{
 
   async onExpenseAdded(expense: Expense) {
     try {
-      // Ensure dates are valid Date objects
       expense.date = expense.date ? new Date(expense.date) : new Date();
       expense.dueDate = expense.dueDate ? new Date(expense.dueDate) : undefined;
       expense.endDate = expense.endDate ? new Date(expense.endDate) : undefined;
@@ -77,7 +85,8 @@ export class MonthlyExpenses implements OnInit{
       }
       
       const id = await this.expenseService.addExpense(expense);
-      console.error('Added expense:', expense);
+      console.log('Added expense with id:', id);
+      
       // Handle recurring expenses
       if (expense.recurring && expense.dueDate && (expense.numOccurrences || expense.endDate)) {
         for (let i = 1; i < (expense.numOccurrences || 12); i++) {
@@ -89,15 +98,14 @@ export class MonthlyExpenses implements OnInit{
             ...expense,
             dueDate: nextDate
           });
-          console.error('Added expense:', expense);
+          console.log('Added recurring expense occurrence:', i);
         }
       }
       
       this.closeForm();
-      this.cdr.detectChanges();
-      
-      await this.loadExpenses();
+      await this.loadExpenses(); // This will trigger change detection
       alert('Successfully added the expense!');
+      
     } catch (error) {
       console.error('Error adding expense:', error);
       alert('Failed to add expense. Please check the form and try again.');
@@ -107,8 +115,7 @@ export class MonthlyExpenses implements OnInit{
   async deleteExpense(id: number) {
     try {
       await this.expenseService.deleteExpense(id);
-      await this.loadExpenses();
-      this.updateChart();
+      await this.loadExpenses(); 
     } catch (error) {
       console.error('Error deleting expense:', error);
     }
@@ -130,6 +137,7 @@ export class MonthlyExpenses implements OnInit{
       1
     );
     const currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+    
     // Only allow navigation if next month is not in the future
     if (nextMonthDate <= currentMonth) {
       this.selectedDate = nextMonthDate;
@@ -152,7 +160,18 @@ export class MonthlyExpenses implements OnInit{
 
   updateChart() {
     if (!this.expenses || this.expenses.length === 0) {
-      this.chartOptions = {};
+      this.chartOptions = {
+        title: {
+          text: 'No expenses for this month',
+          left: 'center',
+          top: 'center',
+          textStyle: {
+            color: '#999',
+            fontSize: 14
+          }
+        }
+      };
+      this.cdr.detectChanges();
       return;
     }
 
@@ -206,6 +225,7 @@ export class MonthlyExpenses implements OnInit{
         }
       ]
     };
+    
+    this.cdr.detectChanges();
   }
-
 }

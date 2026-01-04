@@ -1,4 +1,4 @@
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { BarSeriesOption, EChartsOption } from 'echarts';
@@ -18,41 +18,68 @@ export class YearlyOverview implements OnInit {
   categories: string[] = [];
   availableYears: number[] = [];
   loading = false;
+  today: Date = new Date();
 
-  constructor(private expenseService: ExpenseService) {}
+  constructor(
+    private expenseService: ExpenseService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   async ngOnInit() {
     console.log('Initializing Yearly Overview for year:', this.selectedYear);
+    this.getAvailableYears();
     await this.filteredExpenses();
   }
 
   async filteredExpenses() {
+    this.loading = true;
+    this.cdr.detectChanges(); // Update loading state
+    
     try {
       const allExpenses = await this.expenseService.getExpensesByYear(this.selectedYear);
+      
       this.expenses = allExpenses.filter(exp => {
         const expDate = exp.dueDate || exp.date;
         const date = expDate instanceof Date ? expDate : new Date(expDate);
-        return date.getFullYear() === this.selectedYear;
+        
+        // Filter by year and exclude future expenses
+        return date.getFullYear() === this.selectedYear && date <= this.today;
       });
+      
+      console.log('Filtered Expenses for', this.selectedYear, this.expenses);
       this.updateChart(this.expenses);
-      return this.expenses;
+      
     } catch (error) {
       console.error('Error filtering expenses by year:', error);
+      this.expenses = [];
+      this.updateChart([]);
     } finally {
       this.loading = false;
+      this.cdr.detectChanges(); // Force change detection after loading
     }
-    return [];
   }
 
   updateChart(expenses: Expense[] = []) {
-    console.log('Filtered Expenses for', this.selectedYear, expenses);
     if (expenses.length === 0) {
-      this.chartOptions = {};
+      this.chartOptions = {
+        title: {
+          text: 'No expenses for this year',
+          left: 'center',
+          top: 'center',
+          textStyle: {
+            color: '#999',
+            fontSize: 14
+          }
+        }
+      };
       this.categories = [];
+      this.cdr.detectChanges();
       return;
     }
+    
     // Get unique categories
     this.categories = [...new Set(expenses.map(e => e.category))];
+    
     // Prepare data per category
     const seriesData: BarSeriesOption[] = this.categories.map(cat => {
       const data = Array(12).fill(0); // One entry per month
@@ -79,7 +106,7 @@ export class YearlyOverview implements OnInit {
 
     this.chartOptions = {
       title: { 
-        text: `Annual Expenditure Summary`, 
+        text: `Annual Expenditure Summary - ${this.selectedYear}`, 
         left: 'center',
         top: 10
       },
@@ -90,7 +117,7 @@ export class YearlyOverview implements OnInit {
           let result = `<strong>${params[0].axisValue}</strong><br/>`;
           let total = 0;
           params.forEach((item: any) => {
-            result += `${item.marker} ${item.seriesName}: €${item.value}<br/>`;
+            result += `${item.marker} ${item.seriesName}: €${item.value.toFixed(2)}<br/>`;
             total += item.value;
           });
           result += `<strong>Total: €${total.toFixed(2)}</strong>`;
@@ -119,47 +146,50 @@ export class YearlyOverview implements OnInit {
       },
       series: seriesData
     } as EChartsOption;
+    
+    this.cdr.detectChanges(); // Force chart update
   }
 
-  onYearChange(event: any) {
+  async onYearChange(event: any) {
     this.selectedYear = +event.target.value;
-    this.filteredExpenses();
+    await this.filteredExpenses();
   }
 
-  prevYear() {
+  async prevYear() {
     this.selectedYear--;
-    this.filteredExpenses();
+    await this.filteredExpenses();
   }
 
-  nextYear() {
+  async nextYear() {
     const today = new Date();
     const currentYear = today.getFullYear();
-    if (this.selectedYear <= currentYear) {
+    if (this.selectedYear < currentYear) {
       this.selectedYear++;
-      this.filteredExpenses();
+      await this.filteredExpenses();
     }
   }
 
   isNextYearDisabled(): boolean {
     const today = new Date();
     const currentYear = today.getFullYear();
-    return this.selectedYear > currentYear - 1;
+    return this.selectedYear >= currentYear;
   }
 
   // Calculate total expense for the year
-  getTotalExpenseForYear() {
+  getTotalExpenseForYear(): number {
     return this.expenses.reduce((sum, exp) => sum + exp.amount, 0);
   }
 
   // Get total for a specific category
-  getCategoryTotal(category: string) {
+  getCategoryTotal(category: string): number {
     return this.expenses
-    .filter(e => e.category === category)
+      .filter(e => e.category === category)
       .reduce((sum, e) => sum + e.amount, 0);
   }
 
   getAvailableYears(): number[] {
-    this.availableYears = Array.from({ length: 20 }, (_, i) => this.selectedYear - i);
+    const currentYear = new Date().getFullYear();
+    this.availableYears = Array.from({ length: 20 }, (_, i) => currentYear - i);
     console.log('Available years:', this.availableYears);
     return this.availableYears;
   }
